@@ -162,7 +162,7 @@ void Buffer::step()
 
 //PLAYING
 
-	float A = bufferinoR[PI];
+	float A = bufferinoL[PI];
 	float B = bufferinoR[PI+1];
 	float wet_l = A * (1 -(PH - PI)) + B * (PH - PI);
 	A = bufferinoR[PI];
