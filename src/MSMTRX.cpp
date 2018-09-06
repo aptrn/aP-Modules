@@ -1,4 +1,6 @@
-#include "Template.hpp"
+#include "aP.hpp"
+
+//Mid/Side Matrix, simple LR to MS encoder and MS to LR decoder
 
 struct MSMTRX : Module
 {
@@ -29,32 +31,28 @@ struct MSMTRX : Module
 
 	MSMTRX() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
 	void step() override;
-
-	// For more advanced Module features, read Rack's engine.hpp header file
-	// - toJson, fromJson: serialization of internal data
-	// - onSampleRateChange: event triggered by a change of sample rate
-	// - onReset, onRandomize, onCreate, onDelete: implements special behavior when user clicks these from the context menu
 };
 
 void MSMTRX::step()
 {
 
-	float left_in  = inputs[LEFT_INPUT].value *0.5f;
-	float right_in = inputs[RIGHT_INPUT].value *0.5f;
+	//ENCODER
+	float left_in  = inputs[LEFT_INPUT].value;
+	float right_in = inputs[RIGHT_INPUT].value;
+	float mid_out  = (left_in + right_in)/sqrt(2);
+	float side_out = (left_in - right_in)/sqrt(2);
+	outputs[MID_OUTPUT].value   = mid_out;
+	outputs[SIDE_OUTPUT].value  = side_out;
 
-	float mid_out  = (left_in + right_in);
-	float side_out = (left_in + (right_in * -1));
-	outputs[MID_OUTPUT].value   = mid_out*1.3f;
-	outputs[SIDE_OUTPUT].value  = side_out*1.5f;
 
 
-	float mid_in   = inputs[MID_INPUT].value *0.5f;
-	float side_in  = inputs[SIDE_INPUT].value *0.5f;
-	float left_out  = (mid_in + side_in);
-	float right_out = (mid_in + (side_in * -1));
-	outputs[LEFT_OUTPUT].value  = left_out*1.5f;
-	outputs[RIGHT_OUTPUT].value = right_out*1.5f;
-
+	//DECODER
+	float mid_in   = inputs[MID_INPUT].value;
+	float side_in  = inputs[SIDE_INPUT].value;
+	float left_out  = (mid_in + side_in)/sqrt(2);
+	float right_out = (mid_in - side_in)/sqrt(2);
+	outputs[LEFT_OUTPUT].value  = left_out;
+	outputs[RIGHT_OUTPUT].value = right_out;
 }
 
 struct MSMTRXWidget : ModuleWidget
@@ -69,23 +67,19 @@ struct MSMTRXWidget : ModuleWidget
 		addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
 	
+		//ENCODER
+		addInput(Port::create<PJ301MPort>(Vec(17, 114), Port::INPUT, module, MSMTRX::LEFT_INPUT));
+		addInput(Port::create<PJ301MPort>(Vec(80, 112), Port::INPUT, module, MSMTRX::RIGHT_INPUT));
+	    addOutput(Port::create<PJ301MPort>(Vec(17, 172.5), Port::OUTPUT, module, MSMTRX::MID_OUTPUT));
+		addOutput(Port::create<PJ301MPort>(Vec(80, 172.5), Port::OUTPUT, module, MSMTRX::SIDE_OUTPUT));
 
-		addInput(Port::create<PJ301MPort>(Vec(16, 112), Port::INPUT, module, MSMTRX::LEFT_INPUT));
-		addInput(Port::create<PJ301MPort>(Vec(78, 112), Port::INPUT, module, MSMTRX::RIGHT_INPUT));
-	    addOutput(Port::create<PJ301MPort>(Vec(16, 180), Port::OUTPUT, module, MSMTRX::MID_OUTPUT));
-		addOutput(Port::create<PJ301MPort>(Vec(78, 180), Port::OUTPUT, module, MSMTRX::SIDE_OUTPUT));
 
-		addInput(Port::create<PJ301MPort>(Vec(16, 250), Port::INPUT, module, MSMTRX::MID_INPUT));
-		addInput(Port::create<PJ301MPort>(Vec(78, 250), Port::INPUT, module, MSMTRX::SIDE_INPUT));
-		addOutput(Port::create<PJ301MPort>(Vec(16, 316), Port::OUTPUT, module, MSMTRX::LEFT_OUTPUT));
-		addOutput(Port::create<PJ301MPort>(Vec(78, 316), Port::OUTPUT, module, MSMTRX::RIGHT_OUTPUT));
-	
-
+		//DECODER
+		addInput(Port::create<PJ301MPort>(Vec(17, 254.7), Port::INPUT, module, MSMTRX::MID_INPUT));
+		addInput(Port::create<PJ301MPort>(Vec(80, 254.7), Port::INPUT, module, MSMTRX::SIDE_INPUT));
+		addOutput(Port::create<PJ301MPort>(Vec(17, 310), Port::OUTPUT, module, MSMTRX::LEFT_OUTPUT));
+		addOutput(Port::create<PJ301MPort>(Vec(80, 310), Port::OUTPUT, module, MSMTRX::RIGHT_OUTPUT));
 	}
 };
 
-// Specify the Module and ModuleWidget subclass, human-readable
-// author name for categorization per plugin, module slug (should never
-// change), human-readable module name, and any number of tags
-// (found in `include/tags.hpp`) separated by commas.
 Model *modelMSMTRX = Model::create<MSMTRX, MSMTRXWidget>("aP", "MSMTRX", "Mid/Side Matrix", UTILITY_TAG);
