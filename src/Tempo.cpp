@@ -2,7 +2,8 @@
 #include "dsp/digital.hpp"
 
 
-
+//BETA
+//Triple clock multiplier/divider with chance of skipping per pulse
 
 struct Tempo : Module
 {
@@ -211,7 +212,7 @@ void Tempo::step()
 				}
 				else{																					//Se non sei fra verifica +/- 5
 					sync = false;																		//non sei syncato
-					prevStep = 0;													//Azzera il prevStep
+					prevStep = currentStep;													//Azzera il prevStep
 				}
 			}										
 			else if (sync == false){										//Se non sei syncato
@@ -318,41 +319,41 @@ struct TempoWidget : ModuleWidget
 		addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
 		//MAIN
-		addInput(Port::create<PJ301MPort>(Vec(17.4, 51.6), Port::INPUT, module, Tempo::CLK_INPUT));
-		addChild(ModuleLightWidget::create<LedLight<RedLight>>(Vec(112.6, 55.5), module, Tempo::SYNC_LED));
+		addInput(Port::create<aPJackNero>(Vec(18.2, 50.3), Port::INPUT, module, Tempo::CLK_INPUT));
+		addChild(ModuleLightWidget::create<LedLight<RedLight>>(Vec(111.2, 52.6), module, Tempo::SYNC_LED));
 
 		//RATE
-		addParam(ParamWidget::create<Rogan1PSGreen>(Vec(9, 105.6), module, Tempo::RATE1_PARAM, 0.0f, 1.0f, 0.5f));
-		addParam(ParamWidget::create<Rogan1PSGreen>(Vec(55.2, 105.6), module, Tempo::RATE2_PARAM, 0.0f, 1.0f, 0.5f));
-		addParam(ParamWidget::create<Rogan1PSGreen>(Vec(101.3, 105.6), module, Tempo::RATE3_PARAM, 0.0f, 1.0f, 0.5f));
+		addParam(ParamWidget::create<aPKnob>(Vec(15, 105.3), module, Tempo::RATE1_PARAM, 0.0f, 1.0f, 0.5f));
+		addParam(ParamWidget::create<aPKnob>(Vec(57.8, 105.3), module, Tempo::RATE2_PARAM, 0.0f, 1.0f, 0.5f));
+		addParam(ParamWidget::create<aPKnob>(Vec(101, 105.3), module, Tempo::RATE3_PARAM, 0.0f, 1.0f, 0.5f));
 
-		addInput(Port::create<PJ301MPort>(Vec(17.4, 148.1), Port::INPUT, module, Tempo::RATE1_CV));
-		addInput(Port::create<PJ301MPort>(Vec(63.5, 148.1), Port::INPUT, module, Tempo::RATE2_CV));
-		addInput(Port::create<PJ301MPort>(Vec(109.6, 148.1), Port::INPUT, module, Tempo::RATE3_CV));
+		addInput(Port::create<aPJackGiallo>(Vec(20.7, 145.5), Port::INPUT, module, Tempo::RATE1_CV));
+		addInput(Port::create<aPJackTurchese>(Vec(63.5, 145.5), Port::INPUT, module, Tempo::RATE2_CV));
+		addInput(Port::create<aPJackRosa>(Vec(106.7, 145.5), Port::INPUT, module, Tempo::RATE3_CV));
 		//SKIP
-		addParam(ParamWidget::create<Rogan1PSGreen>(Vec(9, 193.7), module, Tempo::SKIP1_PARAM, 0.0f, 1.0f, 0.0f));
-		addParam(ParamWidget::create<Rogan1PSGreen>(Vec(55.2, 193.7), module, Tempo::SKIP2_PARAM, 0.0f, 1.0f, 0.0f));
-		addParam(ParamWidget::create<Rogan1PSGreen>(Vec(101.3, 193.7), module, Tempo::SKIP3_PARAM, 0.0f, 1.0f, 0.0f));
+		addParam(ParamWidget::create<aPKnob>(Vec(15, 196.3), module, Tempo::SKIP1_PARAM, 0.0f, 1.0f, 0.0f));
+		addParam(ParamWidget::create<aPKnob>(Vec(57.8, 196.3), module, Tempo::SKIP2_PARAM, 0.0f, 1.0f, 0.0f));
+		addParam(ParamWidget::create<aPKnob>(Vec(101, 196.3), module, Tempo::SKIP3_PARAM, 0.0f, 1.0f, 0.0f));
 
-		addInput(Port::create<PJ301MPort>(Vec(17.4, 234.2), Port::INPUT, module, Tempo::SKIP1_CV));
-		addInput(Port::create<PJ301MPort>(Vec(63.5, 234.2), Port::INPUT, module, Tempo::SKIP2_CV));
-		addInput(Port::create<PJ301MPort>(Vec(109.6, 234.2), Port::INPUT, module, Tempo::SKIP3_CV));
+		addInput(Port::create<aPJackArancione>(Vec(20.7, 234.9), Port::INPUT, module, Tempo::SKIP1_CV));
+		addInput(Port::create<aPJackAzzurro>(Vec(63.5, 234.9), Port::INPUT, module, Tempo::SKIP2_CV));
+		addInput(Port::create<aPJackFux>(Vec(106.7,234.9), Port::INPUT, module, Tempo::SKIP3_CV));
 
 		//MUTE
-		addParam(ParamWidget::create<LEDBezel>(Vec(18.2, 278.7), module, Tempo::MUTE1_BTN, 0.0, 1.0, 0.0));
-		addParam(ParamWidget::create<LEDBezel>(Vec(64.4, 278.7), module, Tempo::MUTE2_BTN, 0.0, 1.0, 0.0));
-		addParam(ParamWidget::create<LEDBezel>(Vec(110.5, 278.7), module, Tempo::MUTE3_BTN, 0.0, 1.0, 0.0));
+		addParam(ParamWidget::create<aPLedButton>(Vec(21.9, 278.7), module, Tempo::MUTE1_BTN, 0.0, 1.0, 0.0));
+		addParam(ParamWidget::create<aPLedButton>(Vec(64.7, 278.7), module, Tempo::MUTE2_BTN, 0.0, 1.0, 0.0));
+		addParam(ParamWidget::create<aPLedButton>(Vec(107.8, 278.7), module, Tempo::MUTE3_BTN, 0.0, 1.0, 0.0));
 
-		addChild(ModuleLightWidget::create<LedLight<RedLight>>(Vec(20.9, 280.9), module, Tempo::MUTE1_LED));
-		addChild(ModuleLightWidget::create<LedLight<RedLight>>(Vec(67.1, 280.9), module, Tempo::MUTE2_LED));
-		addChild(ModuleLightWidget::create<LedLight<RedLight>>(Vec(113.2, 280.9), module, Tempo::MUTE3_LED));
+		addChild(ModuleLightWidget::create<LedLight<RedLight>>(Vec(24.6, 280.9), module, Tempo::MUTE1_LED));
+		addChild(ModuleLightWidget::create<LedLight<RedLight>>(Vec(67.4, 280.9), module, Tempo::MUTE2_LED));
+		addChild(ModuleLightWidget::create<LedLight<RedLight>>(Vec(110.5, 280.9), module, Tempo::MUTE3_LED));
 		
 		//OUT
 		//addChild(ModuleLightWidget::create<SmallLight<RedLight>>(Vec(21.2, 304.4), module, Tempo::MULT_LED));
-		addOutput(Port::create<PJ301MPort>(Vec(17.4, 321.4), Port::OUTPUT, module, Tempo::OUTPUT_1));
-		addOutput(Port::create<PJ301MPort>(Vec(63.5, 321.4), Port::OUTPUT, module, Tempo::OUTPUT_2));
-		addOutput(Port::create<PJ301MPort>(Vec(109.6, 321.4), Port::OUTPUT, module, Tempo::OUTPUT_3));
+		addOutput(Port::create<aPJackRosso>(Vec(20.7, 320.5), Port::OUTPUT, module, Tempo::OUTPUT_1));
+		addOutput(Port::create<aPJackBlu>(Vec(63.5, 320.5), Port::OUTPUT, module, Tempo::OUTPUT_2));
+		addOutput(Port::create<aPJackViola>(Vec(106.7, 320.5), Port::OUTPUT, module, Tempo::OUTPUT_3));
 	}
 };
 
-Model *modelTempo = Model::create<Tempo, TempoWidget>("aP", "Tempo", "Tempo - 4x Clock Multiplier - Divider", UTILITY_TAG);
+Model *modelTempo = Model::create<Tempo, TempoWidget>("aP", "Tempo", "Tempo - 4x Clock Multiplier - Divider", SEQUENCER_TAG);

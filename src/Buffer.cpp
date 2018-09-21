@@ -1,7 +1,7 @@
 #include "aP.hpp"
 #include "dsp/digital.hpp"
 
-
+//Record signal into Buffer with freeze option
 
 struct Buffer : Module
 {
@@ -57,11 +57,6 @@ struct Buffer : Module
 	
 	Buffer() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
 	void step() override;
-
-	// For more advanced Module features, read Rack's engine.hpp header file
-	// - toJson, fromJson: serialization of internal data
-	// - onSampleRateChange: event triggered by a change of sample rate
-	// - onReset, onRandomize, onCreate, onDelete: implements special behavior when user clicks these from the context menu
 };
 
 
@@ -163,7 +158,7 @@ void Buffer::step()
 //PLAYING
 
 	float A = bufferinoL[PI];
-	float B = bufferinoR[PI+1];
+	float B = bufferinoL[PI+1];
 	float wet_l = A * (1 -(PH - PI)) + B * (PH - PI);
 	A = bufferinoR[PI];
 	B = bufferinoR[PI+1];
@@ -189,44 +184,40 @@ struct BufferWidget : ModuleWidget
 
  
 
-		addParam(ParamWidget::create<LEDBezel>(Vec(64.4, 53), module, Buffer::FREEZE_SWITCH, 0.0, 1.0, 0.0));
-		addChild(ModuleLightWidget::create<LedLight<RedLight>>(Vec(67.1, 55.2), module, Buffer::FREEZE_LED));
-		addParam(ParamWidget::create<TL1105>(Vec(126, 88), module, Buffer::CLEAR_BTN, 0.0, 1.0, 0.0));
+		addParam(ParamWidget::create<aPLedButton>(Vec(64.8, 53.5), module, Buffer::FREEZE_SWITCH, 0.0, 1.0, 0.0));
+		addChild(ModuleLightWidget::create<LedLight<RedLight>>(Vec(67.5, 55.7), module, Buffer::FREEZE_LED));
+		addParam(ParamWidget::create<aPLittleButton>(Vec(126.8, 88.8), module, Buffer::CLEAR_BTN, 0.0, 1.0, 0.0));
 
-		addParam(ParamWidget::create<Rogan6PSWhite>(Vec(30.4, 82.9), module, Buffer::RATE_PARAM, -4.0, 4.0, 1.0));
-		addParam(ParamWidget::create<Rogan1PSGreen>(Vec(10.6, 175.1), module, Buffer::START_PARAM, 0.0f, 1.0f, 0.0f));
-		addParam(ParamWidget::create<Rogan1PSRed>(Vec(101.7, 175.1), module, Buffer::WIDTH_PARAM, 0.001f, 0.999999f, 0.999999f));
-		addParam(ParamWidget::create<Rogan1PSBlue>(Vec(55.2, 175.1), module, Buffer::DRYWET_PARAM, 0.0f, 1.0f, 1.0f));
-
-
-
-		addInput(Port::create<PJ301MPort>(Vec(108.3, 52.1), Port::INPUT, module, Buffer::FREEZE_CV));
-		addInput(Port::create<PJ301MPort>(Vec(17.9, 52.1), Port::INPUT, module, Buffer::RATE_CV));
+		addParam(ParamWidget::create<aPBigKnob>(Vec(32.9, 82), module, Buffer::RATE_PARAM, -4.0, 4.0, 1.0));
+		addParam(ParamWidget::create<aPKnob>(Vec(14, 173), module, Buffer::START_PARAM, 0.0f, 1.0f, 0.0f));
+		addParam(ParamWidget::create<aPKnob>(Vec(102, 172), module, Buffer::WIDTH_PARAM, 0.001f, 0.999999f, 0.999999f));
+		addParam(ParamWidget::create<aPKnob>(Vec(59.7, 173), module, Buffer::DRYWET_PARAM, 0.0f, 1.0f, 1.0f));
 
 
 
-		addInput(Port::create<PJ301MPort>(Vec(19, 229), Port::INPUT, module, Buffer::START_CV));
-		addInput(Port::create<PJ301MPort>(Vec(63.5, 229), Port::INPUT, module, Buffer::DRYWET_CV));
-		addInput(Port::create<PJ301MPort>(Vec(108.1, 229), Port::INPUT, module, Buffer::WIDTH_CV));
-		
-		addInput(Port::create<PJ301MPort>(Vec(63.5, 309.6), Port::INPUT, module, Buffer::RESET_CV));
-		addOutput(Port::create<PJ301MPort>(Vec(63.5, 279), Port::OUTPUT, module, Buffer::EOC_OUTPUT));
+		addInput(Port::create<aPJackRosso>(Vec(109.7, 52.3), Port::INPUT, module, Buffer::FREEZE_CV));
+		addInput(Port::create<aPJackNero>(Vec(17.9, 52.1), Port::INPUT, module, Buffer::RATE_CV));
 
 
-		addInput(Port::create<PJ301MPort>(Vec(19, 279), Port::INPUT, module, Buffer::LEFT_INPUT));
-		addInput(Port::create<PJ301MPort>(Vec(19, 309.6), Port::INPUT, module, Buffer::RIGHT_INPUT));
-		addOutput(Port::create<PJ301MPort>(Vec(107.8, 279), Port::OUTPUT, module, Buffer::LEFT_OUTPUT));
-		addOutput(Port::create<PJ301MPort>(Vec(107.8, 309.6), Port::OUTPUT, module, Buffer::RIGHT_OUTPUT));
+
+		addInput(Port::create<aPJackVerde>(Vec(19.2, 228.5), Port::INPUT, module, Buffer::START_CV));
+		addInput(Port::create<aPJackTurchese>(Vec(63.7, 228.5), Port::INPUT, module, Buffer::DRYWET_CV));
+		addInput(Port::create<aPJackRosa>(Vec(107.7, 228.8), Port::INPUT, module, Buffer::WIDTH_CV));
+	
+		addOutput(Port::create<aPJackAzzurro>(Vec(63.2, 279.9), Port::OUTPUT, module, Buffer::EOC_OUTPUT));		
+		addInput(Port::create<aPJackBlu>(Vec(63.2, 308.5), Port::INPUT, module, Buffer::RESET_CV));
+
+
+		addInput(Port::create<aPJackGiallo>(Vec(19.6, 279.9), Port::INPUT, module, Buffer::LEFT_INPUT));
+		addInput(Port::create<aPJackArancione>(Vec(19.6, 308.6), Port::INPUT, module, Buffer::RIGHT_INPUT));
+		addOutput(Port::create<aPJackFux>(Vec(107.7, 279.9), Port::OUTPUT, module, Buffer::LEFT_OUTPUT));
+		addOutput(Port::create<aPJackViola>(Vec(107.7, 308.6), Port::OUTPUT, module, Buffer::RIGHT_OUTPUT));
 	
 
 	}
 };
 
-// Specify the Module and ModuleWidget subclass, human-readable
-// author name for categorization per plugin, module slug (should never
-// change), human-readable module name, and any number of tags
-// (found in `include/tags.hpp`) separated by commas.
-Model *modelBuffer = Model::create<Buffer, BufferWidget>("aP", "BUFFER", "Buffer Sampler", SAMPLER_TAG);
+Model *modelBuffer = Model::create<Buffer, BufferWidget>("aP", "Buffer Sampler", "Buffer Sampler - Instant Sampler", SAMPLER_TAG);
 
 
 

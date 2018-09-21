@@ -68,18 +68,18 @@ struct MSMTRXWidget : ModuleWidget
 
 	
 		//ENCODER
-		addInput(Port::create<PJ301MPort>(Vec(17, 114), Port::INPUT, module, MSMTRX::LEFT_INPUT));
-		addInput(Port::create<PJ301MPort>(Vec(80, 112), Port::INPUT, module, MSMTRX::RIGHT_INPUT));
-	    addOutput(Port::create<PJ301MPort>(Vec(17, 172.5), Port::OUTPUT, module, MSMTRX::MID_OUTPUT));
-		addOutput(Port::create<PJ301MPort>(Vec(80, 172.5), Port::OUTPUT, module, MSMTRX::SIDE_OUTPUT));
+		addInput(Port::create<aPJackGiallo>(Vec(16.7, 113.2), Port::INPUT, module, MSMTRX::LEFT_INPUT));
+		addInput(Port::create<aPJackArancione>(Vec(79.7, 113.2), Port::INPUT, module, MSMTRX::RIGHT_INPUT));
+	    addOutput(Port::create<aPJackTurchese>(Vec(16.7, 167.2), Port::OUTPUT, module, MSMTRX::MID_OUTPUT));
+		addOutput(Port::create<aPJackBlu>(Vec(79.7, 167.2), Port::OUTPUT, module, MSMTRX::SIDE_OUTPUT));
 
 
 		//DECODER
-		addInput(Port::create<PJ301MPort>(Vec(17, 254.7), Port::INPUT, module, MSMTRX::MID_INPUT));
-		addInput(Port::create<PJ301MPort>(Vec(80, 254.7), Port::INPUT, module, MSMTRX::SIDE_INPUT));
-		addOutput(Port::create<PJ301MPort>(Vec(17, 310), Port::OUTPUT, module, MSMTRX::LEFT_OUTPUT));
-		addOutput(Port::create<PJ301MPort>(Vec(80, 310), Port::OUTPUT, module, MSMTRX::RIGHT_OUTPUT));
+		addInput(Port::create<aPJackTurchese>(Vec(16.7, 247.9), Port::INPUT, module, MSMTRX::MID_INPUT));
+		addInput(Port::create<aPJackBlu>(Vec(79.7, 247.9), Port::INPUT, module, MSMTRX::SIDE_INPUT));
+		addOutput(Port::create<aPJackVerde>(Vec(16.7, 305), Port::OUTPUT, module, MSMTRX::LEFT_OUTPUT));
+		addOutput(Port::create<aPJackRosso>(Vec(79.7, 305), Port::OUTPUT, module, MSMTRX::RIGHT_OUTPUT));
 	}
 };
 
-Model *modelMSMTRX = Model::create<MSMTRX, MSMTRXWidget>("aP", "MSMTRX", "Mid/Side Matrix", UTILITY_TAG);
+Model *modelMSMTRX = Model::create<MSMTRX, MSMTRXWidget>("aP", "MS Matrix", "Mid/Side Matrix - LR to MS and MS to LR encoder/decoder", UTILITY_TAG);

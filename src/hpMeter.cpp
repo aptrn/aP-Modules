@@ -108,6 +108,8 @@ struct hpMeterWidget : ModuleWidget {
 	TransparentWidget *display;
 	hpMeterWidget(hpMeter *module);
 	void step() override;
+	json_t *toJson() override;
+	void fromJson(json_t *rootJ) override;
 };
 
 hpMeterWidget::hpMeterWidget(hpMeter *module) : ModuleWidget(module) {
@@ -155,5 +157,24 @@ void hpMeterWidget::step() {
     leftHandle->box.pos.x = box.size.x - leftHandle->box.size.x;
 	ModuleWidget::step();
 }
+
+
+json_t *hpMeterWidget::toJson() {
+	json_t *rootJ = ModuleWidget::toJson();
+	json_object_set_new(rootJ, "width", json_real(box.size.x));
+	json_object_set_new(rootJ, "height", json_real(box.size.y));
+	return rootJ;
+}
+
+void hpMeterWidget::fromJson(json_t *rootJ) {
+	ModuleWidget::fromJson(rootJ);
+	json_t *widthJ = json_object_get(rootJ, "width");
+	if (widthJ)
+		box.size.x = json_number_value(widthJ);
+	json_t *heightJ = json_object_get(rootJ, "height");
+	if (heightJ)
+		box.size.y = json_number_value(heightJ);
+}
+
 
 Model *modelhpMeter = Model::create<hpMeter, hpMeterWidget>("aP", "hpMeter", "HP Meter", VISUAL_TAG);
