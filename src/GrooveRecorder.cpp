@@ -66,6 +66,9 @@ void GrooveRecorder::step()
     if (!inputs[REC_CV].active){
         if (rec_trig.process(params[REC_BUTTON].value)){
             recording = !recording;
+            if (recording == true){
+                currentStep = 1;
+            }
         }
     }
     else {
@@ -81,6 +84,9 @@ void GrooveRecorder::step()
             if (inputs[GATE_INPUT].active){
                 if (recording == true){
                     if (gate_input.process(rescale(inputs[GATE_INPUT].value, 0.2f, 1.7f, 0.0f, 1.0f))){
+                       buffer[currentStep] = true;
+                    }
+                    else if (inputs[GATE_INPUT].value > 0){
                        buffer[currentStep] = true;
                     }
                     else {
@@ -103,8 +109,10 @@ void GrooveRecorder::step()
     lights[REC_LED].value = recording ? 1.0f : 0.0f;
     outputs[REC_OUTPUT].value = recording ? 10.0f : 0.0f;
 
+
+
     float out = main_pulse.process(1.0 / engineGetSampleRate()); 
-    outputs[MAIN_OUTPUT].value = rescale(out, 0.0f, 1.0f, 0.0f, 10.0f);
+    outputs[MAIN_OUTPUT].value = (out ? 10.0f : 0.0f);
     lights[MANUAL_LED].value = led_pulse.process(1.0 / engineGetSampleRate())  ? 1.0f : 0.0f;
 }
 
@@ -128,7 +136,7 @@ struct GrooveRecorderWidget : ModuleWidget
 		addInput(Port::create<aPJackGiallo>(Vec(12.5, 131), Port::INPUT, module, GrooveRecorder::REC_CV));
  		addOutput(Port::create<aPJackArancione>(Vec(54.5, 131.5), Port::OUTPUT, module, GrooveRecorder::REC_OUTPUT));
  		addInput(Port::create<aPJackVerde>(Vec(12.8, 182), Port::INPUT, module, GrooveRecorder::GATE_INPUT));
-		addParam(ParamWidget::create<aPKnob>(Vec(9.3, 229.5), module, GrooveRecorder::STEPS_PARAM, 0.0, 255.0, 32.0));
+		addParam(ParamWidget::create<aPKnob>(Vec(9.3, 229.5), module, GrooveRecorder::STEPS_PARAM, 0.0, 32.0, 32.0));
  		addInput(Port::create<aPJackViola>(Vec(54.5, 237.7), Port::INPUT, module, GrooveRecorder::STEPS_CV));       
         addOutput(Port::create<aPJackBlu>(Vec(33.5, 297.5), Port::OUTPUT, module, GrooveRecorder::MAIN_OUTPUT));
 	}

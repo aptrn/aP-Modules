@@ -108,7 +108,7 @@ struct VoltageRecorderWidget : ModuleWidget
 		addInput(Port::create<aPJackGiallo>(Vec(12.5, 131), Port::INPUT, module, VoltageRecorder::REC_CV));
  		addOutput(Port::create<aPJackArancione>(Vec(54.5, 131), Port::OUTPUT, module, VoltageRecorder::REC_OUTPUT));
  		addInput(Port::create<aPJackVerde>(Vec(33, 182), Port::INPUT, module, VoltageRecorder::CV_INPUT));
-		addParam(ParamWidget::create<aPKnob>(Vec(9.3, 229.5), module, VoltageRecorder::STEPS_PARAM, 0.0, 255.0, 32.0));
+		addParam(ParamWidget::create<aPKnob>(Vec(9.3, 229.5), module, VoltageRecorder::STEPS_PARAM, 0.0, 32.0, 32.0));
  		addInput(Port::create<aPJackViola>(Vec(54.5, 237.7), Port::INPUT, module, VoltageRecorder::STEPS_CV));       
         addOutput(Port::create<aPJackBlu>(Vec(33, 297.5), Port::OUTPUT, module, VoltageRecorder::MAIN_OUTPUT));
 	}

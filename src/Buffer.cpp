@@ -73,17 +73,15 @@ void Buffer::step()
 	float dry_l  = inputs[LEFT_INPUT].value;
 	float dry_r = inputs[RIGHT_INPUT].value;
 
-	int start_cv = map(inputs[START_CV].value, 0.0f, 10.0f, 0, buffersize-2);
-	int width_cv = map(inputs[WIDTH_CV].value, 0.0f, 10.0f, 0, buffersize-2);
+	int start_cv = map(abs(inputs[START_CV].value), 0.0f, 10.0f, 0, buffersize-2);
+	int width_cv = map(abs(inputs[WIDTH_CV].value), 0.0f, 10.0f, 0, buffersize-2);
 
 	int start_knob = map(params[START_PARAM].value, 0.0f, 1.0f, 0, buffersize-2);
 	int width_knob = map(params[WIDTH_PARAM].value, 0.0f, 1.0f, 0, buffersize-2);
 	
 	float rate = params[RATE_PARAM].value + inputs[RATE_CV].value;
-
 	int start = start_knob + start_cv;
 	int width = width_knob + width_cv;
-
 	int end = (start + width) % (buffersize-2);
 
 	if (clear_trig.process(params[CLEAR_BTN].value)){
