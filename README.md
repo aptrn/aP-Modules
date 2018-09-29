@@ -4,25 +4,25 @@
 
 ## Modules
 
-###    M/S Matrix
+####    M/S Matrix
    Simple Mid/Side Encoder/Decoder
 
-###    Buffer Sampler
+####    Buffer Sampler
    Real-Time Sampler with Rate and Window Control
     
-###    Detuner
+####    Detuner
    1V/Oct input to four detuned output with amount of randomness
     
-###    Groove Recorder
+####    Groove Recorder
    Record gates into clocked buffer
     
-###    Voltage Recorder 
+####    Voltage Recorder 
    Record CVs into clocked buffer
     
-###    Tempo (beta)
+####    Tempo (beta)
    3x Rhythm Derivator based on Clock Multipier and Divider
     
-###    HP Meter 
+####    HP Meter 
    Colourful Resizable Blank
 
 
