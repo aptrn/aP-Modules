@@ -82,4 +82,4 @@ struct MSMTRXWidget : ModuleWidget
 	}
 };
 
-Model *modelMSMTRX = Model::create<MSMTRX, MSMTRXWidget>("aP", "MS Matrix", "Mid/Side Matrix - LR to MS and MS to LR encoder/decoder", UTILITY_TAG);
+Model *modelMSMTRX = Model::create<MSMTRX, MSMTRXWidget>("aP-Modules", "MS Matrix", "Mid/Side Matrix - LR to MS and MS to LR encoder/decoder", UTILITY_TAG);

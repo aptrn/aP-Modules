@@ -177,4 +177,4 @@ void hpMeterWidget::fromJson(json_t *rootJ) {
 }
 
 
-Model *modelhpMeter = Model::create<hpMeter, hpMeterWidget>("aP", "hpMeter", "HP Meter", VISUAL_TAG);
+Model *modelhpMeter = Model::create<hpMeter, hpMeterWidget>("aP-Modules", "hpMeter", "HP Meter", VISUAL_TAG);

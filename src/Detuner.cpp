@@ -222,4 +222,4 @@ Menu *DetunerWidget::createContextMenu() {
 	return menu;
 }
 
-Model *modelDetuner = Model::create<Detuner, DetunerWidget>("aP", "4x Random Detuner", "Detuner - 4x Random Detuner", UTILITY_TAG);
+Model *modelDetuner = Model::create<Detuner, DetunerWidget>("aP-Modules", "4x Random Detuner", "Detuner - 4x Random Detuner", UTILITY_TAG);

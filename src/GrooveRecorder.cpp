@@ -142,4 +142,4 @@ struct GrooveRecorderWidget : ModuleWidget
 	}
 };
 
-Model *modelGrooveRecorder = Model::create<GrooveRecorder, GrooveRecorderWidget>("aP", "Groove Recorder", "Groove Recorder - Clocked Gates Recorder", SAMPLER_TAG, UTILITY_TAG);
+Model *modelGrooveRecorder = Model::create<GrooveRecorder, GrooveRecorderWidget>("aP-Modules", "Groove Recorder", "Groove Recorder - Clocked Gates Recorder", SAMPLER_TAG, UTILITY_TAG);

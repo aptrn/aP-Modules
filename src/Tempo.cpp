@@ -356,4 +356,4 @@ struct TempoWidget : ModuleWidget
 	}
 };
 
-Model *modelTempo = Model::create<Tempo, TempoWidget>("aP", "Tempo", "Tempo - 4x Clock Multiplier - Divider", SEQUENCER_TAG);
+Model *modelTempo = Model::create<Tempo, TempoWidget>("aP-Modules", "Tempo", "Tempo - 4x Clock Multiplier - Divider", SEQUENCER_TAG);

@@ -215,7 +215,7 @@ struct BufferWidget : ModuleWidget
 	}
 };
 
-Model *modelBuffer = Model::create<Buffer, BufferWidget>("aP", "Buffer Sampler", "Buffer Sampler - Instant Sampler", SAMPLER_TAG);
+Model *modelBuffer = Model::create<Buffer, BufferWidget>("aP-Modules", "Buffer Sampler", "Buffer Sampler - Instant Sampler", SAMPLER_TAG);
 
 
 

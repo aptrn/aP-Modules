@@ -114,4 +114,4 @@ struct VoltageRecorderWidget : ModuleWidget
 	}
 };
 
-Model *modelVoltageRecorder = Model::create<VoltageRecorder, VoltageRecorderWidget>("aP", "VoltageRecorder", "Voltage Recorder - Clocked CVs Recorder", SAMPLER_TAG, UTILITY_TAG);
+Model *modelVoltageRecorder = Model::create<VoltageRecorder, VoltageRecorderWidget>("aP-Modules", "VoltageRecorder", "Voltage Recorder - Clocked CVs Recorder", SAMPLER_TAG, UTILITY_TAG);
