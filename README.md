@@ -9,19 +9,19 @@
 ## Modules
 
 ####    M/S Matrix
-   Simple Mid/Side Encoder/Decoder
+   Simple Mid/Side Encoder/Decoder - [Manual](https://github.com/aptrn/aP-Modules/blob/master/Single-Page%20Manual/MsMatrix.pdf)
 
 ####    Buffer Sampler
-   Real-Time Sampler with Rate and Window Control - [Demo](https://youtu.be/ni2AYXCnCrE)
+   Real-Time Sampler with Rate and Window Control - [Demo](https://youtu.be/ni2AYXCnCrE) [Manual](https://github.com/aptrn/aP-Modules/blob/master/Single-Page%20Manual/BufferSampler.pdf)
     
 ####    Detuner
-   1V/Oct input to four detuned output with amount of randomness - [Demo](https://youtu.be/GoBfVJexKkQ)
+   1V/Oct input to four detuned output with amount of randomness - [Demo](https://youtu.be/GoBfVJexKkQ) [Manual](https://github.com/aptrn/aP-Modules/blob/master/Single-Page%20Manual/Detuner.pdf)
     
 ####    Groove Recorder
-   Record gates into clocked buffer - [Demo](https://youtu.be/eOpwK2z1c0c)
+   Record gates into clocked buffer - [Demo](https://youtu.be/eOpwK2z1c0c)  [Manual](https://github.com/aptrn/aP-Modules/blob/master/Single-Page%20Manual/GrooveRecorder.pdf)
     
 ####    Voltage Recorder 
-   Record CVs into clocked buffer - [Demo](https://youtu.be/eOpwK2z1c0c)
+   Record CVs into clocked buffer - [Demo](https://youtu.be/eOpwK2z1c0c) [Manual](https://github.com/aptrn/aP-Modules/blob/master/Single-Page%20Manual/VoltageRecorder.pdf)
     
 ####    Tempo (beta)
    3x Rhythm Derivator based on Clock Multipier and Divider
