@@ -1,7 +1,7 @@
 # aP-Modules
 
    My set of modules for [VCV Rack](https://github.com/VCVRack/Rack), open-source Eurorack-style virtual modular synthesizer.
-   You can quick check functions on Single-Page Manual folder o [video demos](https://www.youtube.com/playlist?list=PLTBeMIi26Jo1aHUOn0w_AcFaeOnk1HJ9S).
+   You can quick check functions on [Single-Page Manuals](https://github.com/aptrn/aP-Modules/tree/master/Single-Page%20Manual) o [video demos](https://www.youtube.com/playlist?list=PLTBeMIi26Jo1aHUOn0w_AcFaeOnk1HJ9S).
    
    ![](res/all.png?raw=true)
    
