@@ -54,15 +54,32 @@ struct Buffer : Module
 	float PH = 0.0;
 	float RH = 0.0;
 	bool fadesOn = false;
-	float fadeAmount = 1;
+	float fadeAmount = 1.0f;
 	int fade = 0;
 	
 	Buffer() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
 	void step() override;
+
+	json_t *toJson() override {
+    json_t *rootJ = json_object();
+    json_object_set_new(rootJ, "Fades", json_integer((bool) fadesOn));
+    json_object_set_new(rootJ, "Freeze", json_integer((bool) freeze));
+    return rootJ;
+	}
+	void fromJson(json_t *rootJ) override {
+		json_t *sumJ = json_object_get(rootJ, "Fades");
+		if (sumJ)
+			fadesOn = json_integer_value(sumJ);
+
+		json_t *extJ = json_object_get(rootJ, "Freeze");
+		if (extJ)
+			freeze = json_integer_value(extJ);
+	}
+    void reset() override {
+		freeze = false;
+		fadesOn = false;
+	}
 };
-
-
-
 
 float map(float input, float old_min, float old_max, float new_min, float new_max){
 float scalato = (((input - old_min)* (new_max - new_min)) / (old_max - old_min)) + new_min;
@@ -176,12 +193,12 @@ void Buffer::step()
 	if (fadesOn == true){
 		if (fade > 0){
 			fade++;
-			if (fade < 44*10){
-				fadeAmount = rescale(fade, 0, 44*10, 0.1, 1.0f);
+			if (fade < 44*3){
+				fadeAmount = rescale(fade, 0, 44*3, 0.000001f, 1.0f);
 			}
 			else {
 				fade = 0;
-				fadeAmount = 1;
+				fadeAmount = 1.0f;
 			}
 		}
 		wet_l = wet_l* fadeAmount;
@@ -272,6 +289,7 @@ Menu *BufferWidget::createContextMenu() {
 	fadesMenuItem->text = "Fades";
 	fadesMenuItem->buFfer = buFfer;
 	menu->addChild(fadesMenuItem);
+
 	return menu;
 }
 
