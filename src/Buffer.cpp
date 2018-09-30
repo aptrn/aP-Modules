@@ -53,7 +53,9 @@ struct Buffer : Module
 	float bufferinoR[176400] = {0.0};
 	float PH = 0.0;
 	float RH = 0.0;
-
+	bool fadesOn = false;
+	float fadeAmount = 1;
+	int fade = 0;
 	
 	Buffer() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
 	void step() override;
@@ -109,15 +111,18 @@ void Buffer::step()
 			if (PH > end){
 				PH = start;
 				eoc.trigger(0.0001f);
+				fade = 1;
 			}
 		}
 		else if (start > end){
 			if (PH > end && PH < start){
 				PH = start;
 				eoc.trigger(0.0001f);
+				fade = 1;
 			}
 			else if (PH > start && PH > buffersize-2){
 				PH = 0;
+				fade = 1;
 			}
 		}
 	}
@@ -126,15 +131,18 @@ void Buffer::step()
 			if (PH < start){
 				PH = end;
 				eoc.trigger(0.0001f);
+				fade = 1;
 			}
 		}
 		else if (start > end){
 			if (PH < start && PH > start){
 				PH = end;
 				eoc.trigger(0.0001f);
+				fade = 1;
 			}
 			else if (PH < end && PH < 0){
 				PH = buffersize-2;
+				fade = 1;
 			}
 		}
 	}
@@ -162,11 +170,30 @@ void Buffer::step()
 	B = bufferinoR[PI+1];
 	float wet_r = A * (1 -(PH - PI)) + B * (PH - PI);
 
+
+//FADES
+
+	if (fadesOn == true){
+		if (fade > 0){
+			fade++;
+			if (fade < 44*10){
+				fadeAmount = rescale(fade, 0, 44*10, 0.1, 1.0f);
+			}
+			else {
+				fade = 0;
+				fadeAmount = 1;
+			}
+		}
+		wet_l = wet_l* fadeAmount;
+		wet_r = wet_r* fadeAmount;
+	}
+
+
 //OUTPUT
 	float eoc_pulse = eoc.process(1.0 / engineGetSampleRate());  
   	outputs[EOC_OUTPUT].value = (eoc_pulse ? 10.0f : 0.0f);
-	outputs[LEFT_OUTPUT].value  = (dry_l * map(drywet, 0.0, 1.0, 1.0, 0.0)) + (wet_l * drywet);
-	outputs[RIGHT_OUTPUT].value = (dry_r * map(drywet, 0.0, 1.0, 1.0, 0.0)) + (wet_r * drywet);
+	outputs[LEFT_OUTPUT].value  = (dry_l * map(drywet, 0.0, 1.0, 1.0, 0.0)) + (wet_l  *drywet);
+	outputs[RIGHT_OUTPUT].value = (dry_r * map(drywet, 0.0, 1.0, 1.0, 0.0)) + (wet_r  *drywet);
 }
 
 struct BufferWidget : ModuleWidget
@@ -211,9 +238,42 @@ struct BufferWidget : ModuleWidget
 		addOutput(Port::create<aPJackFux>(Vec(107.7, 279.9), Port::OUTPUT, module, Buffer::LEFT_OUTPUT));
 		addOutput(Port::create<aPJackViola>(Vec(107.7, 308.6), Port::OUTPUT, module, Buffer::RIGHT_OUTPUT));
 	
+	}
 
+	Menu *createContextMenu() override;
+};
+
+
+struct FadesMenuItem : MenuItem {
+	Buffer *buFfer;
+	void onAction(EventAction &e) override {
+		if (buFfer->fadesOn == true){
+			buFfer->fadesOn = false;
+		}
+		else if (buFfer->fadesOn == false){
+			buFfer->fadesOn = true;
+		}
+	}
+	void step() override {
+		rightText = (buFfer->fadesOn) ? "✔" : "";
 	}
 };
+
+Menu *BufferWidget::createContextMenu() {
+	Menu *menu = ModuleWidget::createContextMenu();
+
+	MenuLabel *spacerLabel = new MenuLabel();
+	menu->addChild(spacerLabel);
+
+	Buffer *buFfer = dynamic_cast<Buffer*>(module);
+	assert(buFfer);
+
+	FadesMenuItem *fadesMenuItem = new FadesMenuItem();
+	fadesMenuItem->text = "Fades";
+	fadesMenuItem->buFfer = buFfer;
+	menu->addChild(fadesMenuItem);
+	return menu;
+}
 
 Model *modelBuffer = Model::create<Buffer, BufferWidget>("aP-Modules", "Buffer Sampler", "Buffer Sampler - Instant Sampler", SAMPLER_TAG);
 
