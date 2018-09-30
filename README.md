@@ -12,16 +12,16 @@
    Simple Mid/Side Encoder/Decoder
 
 ####    Buffer Sampler
-   Real-Time Sampler with Rate and Window Control - [Demo] (https://youtu.be/ni2AYXCnCrE)
+   Real-Time Sampler with Rate and Window Control - [Demo](https://youtu.be/ni2AYXCnCrE)
     
 ####    Detuner
-   1V/Oct input to four detuned output with amount of randomness - [Demo] (https://youtu.be/GoBfVJexKkQ)
+   1V/Oct input to four detuned output with amount of randomness - [Demo](https://youtu.be/GoBfVJexKkQ)
     
 ####    Groove Recorder
-   Record gates into clocked buffer - [Demo] (https://youtu.be/eOpwK2z1c0c)
+   Record gates into clocked buffer - [Demo](https://youtu.be/eOpwK2z1c0c)
     
 ####    Voltage Recorder 
-   Record CVs into clocked buffer - [Demo] (https://youtu.be/eOpwK2z1c0c)
+   Record CVs into clocked buffer - [Demo](https://youtu.be/eOpwK2z1c0c)
     
 ####    Tempo (beta)
    3x Rhythm Derivator based on Clock Multipier and Divider
