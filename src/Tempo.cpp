@@ -55,16 +55,16 @@ struct Tempo : Module
 
 		NUM_LIGHTS
 	};
-	SchmittTrigger clock_input;
+	dsp::SchmittTrigger clock_input;
 	int ratearr [11] = {6, 5, 4, 3, 2, 1, 2, 3, 4, 5, 6};
 
-	SchmittTrigger mute1_trig;
-	SchmittTrigger mute2_trig;
-	SchmittTrigger mute3_trig;
+	dsp::SchmittTrigger mute1_trig;
+	dsp::SchmittTrigger mute2_trig;
+	dsp::SchmittTrigger mute3_trig;
 
-	PulseGenerator pulse_1;
-	PulseGenerator pulse_2;
-	PulseGenerator pulse_3;
+	dsp::PulseGenerator pulse_1;
+	dsp::PulseGenerator pulse_2;
+	dsp::PulseGenerator pulse_3;
 
 
 	float pulse_time = 0;
@@ -87,43 +87,44 @@ struct Tempo : Module
 
 
 
-	Tempo() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
-	void step() override;
+	Tempo() {
+		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);}
+	void process(const ProcessArgs &args) override;
 
 
 };
 
 bool skip_fun(float knob, float cv){
-	float r = randomUniform();
+	float r = random::uniform();
 	float threshold = clamp(knob + (cv/10.f), 0.f, 1.f);
 	return r < threshold;
 }
 
-void Tempo::step()
+void Tempo::process(const ProcessArgs &args)
 {
 
 	/////////////////////////////////////////////////////////// INITIALIZATION
 
 
 	//Create Skips
-	bool skip1 = skip_fun(params[SKIP1_PARAM].value, inputs[SKIP1_CV].value);
-	bool skip2 = skip_fun(params[SKIP2_PARAM].value, inputs[SKIP2_CV].value);
-	bool skip3 = skip_fun(params[SKIP3_PARAM].value, inputs[SKIP3_CV].value);
+	bool skip1 = skip_fun(params[SKIP1_PARAM].getValue(), inputs[SKIP1_CV].getVoltage());
+	bool skip2 = skip_fun(params[SKIP2_PARAM].getValue(), inputs[SKIP2_CV].getVoltage());
+	bool skip3 = skip_fun(params[SKIP3_PARAM].getValue(), inputs[SKIP3_CV].getVoltage());
 
 
 
 	//Check Mutes and relative LEDs
-	if (mute1_trig.process(params[MUTE1_BTN].value)){
+	if (mute1_trig.process(params[MUTE1_BTN].getValue())){
 		mute1 = !mute1;
 	}
 	lights[MUTE1_LED].value = mute1 ? 1.0f : 0.0f;
 	
-	if (mute2_trig.process(params[MUTE2_BTN].value)){
+	if (mute2_trig.process(params[MUTE2_BTN].getValue())){
 		mute2 = !mute2;
 	}
 	lights[MUTE2_LED].value = mute2 ? 1.0f : 0.0f;
 
-	if (mute3_trig.process(params[MUTE3_BTN].value)){
+	if (mute3_trig.process(params[MUTE3_BTN].getValue())){
 		mute3 = !mute3;
 	}
 	lights[MUTE3_LED].value = mute3 ? 1.0f : 0.0f;
@@ -135,39 +136,39 @@ void Tempo::step()
 	int index1, index2, index3;
 
 
-	if (inputs[RATE1_CV].active){
-		float rate1_cv_val = rescale(inputs[RATE1_CV].value, -10.0f, 10.f, -1.0f, 1.0f);
-		float rate1_val = rescale(params[RATE1_PARAM].value, 0.0f, 1.0f, -1.0f, 1.0f);
+	if (inputs[RATE1_CV].isConnected()){
+		float rate1_cv_val = rescale(inputs[RATE1_CV].getVoltage(), -10.0f, 10.f, -1.0f, 1.0f);
+		float rate1_val = rescale(params[RATE1_PARAM].getValue(), 0.0f, 1.0f, -1.0f, 1.0f);
 		index1 = rescale(rate1_cv_val*rate1_val, -1.0f, 1.0f, 0, 11);
 	}
 	else {
-		float rate1_val = params[RATE1_PARAM].value;
+		float rate1_val = params[RATE1_PARAM].getValue();
 		index1 = rescale(rate1_val, 0.0f, 1.0f, 0, 11);
 	}
 	isMult1 = index1 > 5;
 	rate1 = ratearr[index1];
 
 
-	if (inputs[RATE2_CV].active){
-		float rate2_cv_val = rescale(inputs[RATE2_CV].value, -10.0f, 10.f, -1.0f, 1.0f);
-		float rate2_val = rescale(params[RATE2_PARAM].value, 0.0f, 1.0f, -1.0f, 1.0f);
+	if (inputs[RATE2_CV].isConnected()){
+		float rate2_cv_val = rescale(inputs[RATE2_CV].getVoltage(), -10.0f, 10.f, -1.0f, 1.0f);
+		float rate2_val = rescale(params[RATE2_PARAM].getValue(), 0.0f, 1.0f, -1.0f, 1.0f);
 		index2 = rescale(rate2_cv_val*rate2_val, -1.0f, 1.0f, 0, 11);
 	}
 	else {
-		float rate2_val = params[RATE2_PARAM].value;
+		float rate2_val = params[RATE2_PARAM].getValue();
 		index2 = rescale(rate2_val, 0.0f, 1.0f, 0, 11);
 	}
 	isMult2 = index2 > 5;
 	rate2 = ratearr[index2];
 
 
-	if (inputs[RATE3_CV].active){
-	float rate3_cv_val = rescale(inputs[RATE3_CV].value, -10.0f, 10.f, -1.0f, 1.0f);
-	float rate3_val = rescale(params[RATE3_PARAM].value, 0.0f, 1.0f, -1.0f, 1.0f);
+	if (inputs[RATE3_CV].isConnected()){
+	float rate3_cv_val = rescale(inputs[RATE3_CV].getVoltage(), -10.0f, 10.f, -1.0f, 1.0f);
+	float rate3_val = rescale(params[RATE3_PARAM].getValue(), 0.0f, 1.0f, -1.0f, 1.0f);
 	index3 = rescale(rate3_cv_val*rate3_val, -1.0f, 1.0f, 0, 11);
 	}
 	else {
-		float rate3_val = params[RATE3_PARAM].value;
+		float rate3_val = params[RATE3_PARAM].getValue();
 		index3 = rescale(rate3_val, 0.0f, 1.0f, 0, 11);
 	}
 	isMult3 = index3 > 5;
@@ -182,8 +183,8 @@ void Tempo::step()
 	/////////////////////////////////////////////////////////// CLOCK DETECTION
 	currentStep++;				
 	
-	if (inputs[CLK_INPUT].active){				
-		if (clock_input.process(rescale(inputs[CLK_INPUT].value, 0.2f, 1.7f, 0.0f, 1.0f))){
+	if (inputs[CLK_INPUT].isConnected()){				
+		if (clock_input.process(rescale(inputs[CLK_INPUT].getVoltage(), 0.2f, 1.7f, 0.0f, 1.0f))){
 			if (sync == true){											//Se credi di essere syncato
 				int verifica = delta + prevStep;											//dovresti essere a verifica
 				if (currentStep < verifica+ 5 && currentStep > verifica - 5){							//se sei fra verifica +/- 5
@@ -287,19 +288,19 @@ void Tempo::step()
 
 	/////////////////////////////////////////////////////////// TRIG OUTPUT
 
-	bool out1 = pulse_1.process(1.0 / engineGetSampleRate());  
+	bool out1 = pulse_1.process(1.0 / args.sampleRate);  
 	if (mute1 == false){
-  	outputs[OUTPUT_1].value = rescale(out1, 0.0f, 1.0f, 0.0f, 10.0f);
+  	outputs[OUTPUT_1].setVoltage(rescale(out1, 0.0f, 1.0f, 0.0f, 10.0f));
 	}
 
-	bool out2 = pulse_2.process(1.0 / engineGetSampleRate());  
+	bool out2 = pulse_2.process(1.0 / args.sampleRate);  
 	if (mute2 == false){
-  	outputs[OUTPUT_2].value = rescale(out2, 0.0f, 1.0f, 0.0f, 10.0f);
+  	outputs[OUTPUT_2].setVoltage(rescale(out2, 0.0f, 1.0f, 0.0f, 10.0f));
 	}
 
-	bool out3 = pulse_3.process(1.0 / engineGetSampleRate());  
+	bool out3 = pulse_3.process(1.0 / args.sampleRate);  
 	if (mute3 == false){
-  	outputs[OUTPUT_3].value = rescale(out3, 0.0f, 1.0f, 0.0f, 10.0f);
+  	outputs[OUTPUT_3].setVoltage(rescale(out3, 0.0f, 1.0f, 0.0f, 10.0f));
 	}
 
 	// LED OUTPUT
@@ -311,49 +312,49 @@ struct TempoWidget : ModuleWidget
 {
 	TempoWidget(Tempo *module) : ModuleWidget(module)
 	{
-		setPanel(SVG::load(assetPlugin(plugin, "res/Tempo.svg")));
+		setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Tempo.svg")));
 
-		addChild(Widget::create<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
-		addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
-		addChild(Widget::create<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
-		addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
+		addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
+		addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
+		addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
+		addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
 		//MAIN
-		addInput(Port::create<aPJackNero>(Vec(18.2, 50.3), Port::INPUT, module, Tempo::CLK_INPUT));
-		addChild(ModuleLightWidget::create<LedLight<RedLight>>(Vec(111.2, 52.6), module, Tempo::SYNC_LED));
+		addInput(createInput<aPJackNero>(Vec(18.2, 50.3), module, Tempo::CLK_INPUT));
+		addChild(createLight<LedLight<RedLight>>(Vec(111.2, 52.6), module, Tempo::SYNC_LED));
 
 		//RATE
-		addParam(ParamWidget::create<aPKnob>(Vec(15, 105.3), module, Tempo::RATE1_PARAM, 0.0f, 1.0f, 0.5f));
-		addParam(ParamWidget::create<aPKnob>(Vec(57.8, 105.3), module, Tempo::RATE2_PARAM, 0.0f, 1.0f, 0.5f));
-		addParam(ParamWidget::create<aPKnob>(Vec(101, 105.3), module, Tempo::RATE3_PARAM, 0.0f, 1.0f, 0.5f));
+		addParam(createParam<aPKnob>(Vec(15, 105.3), module, Tempo::RATE1_PARAM));
+		addParam(createParam<aPKnob>(Vec(57.8, 105.3), module, Tempo::RATE2_PARAM));
+		addParam(createParam<aPKnob>(Vec(101, 105.3), module, Tempo::RATE3_PARAM));
 
-		addInput(Port::create<aPJackGiallo>(Vec(20.7, 145.5), Port::INPUT, module, Tempo::RATE1_CV));
-		addInput(Port::create<aPJackTurchese>(Vec(63.5, 145.5), Port::INPUT, module, Tempo::RATE2_CV));
-		addInput(Port::create<aPJackRosa>(Vec(106.7, 145.5), Port::INPUT, module, Tempo::RATE3_CV));
+		addInput(createInput<aPJackGiallo>(Vec(20.7, 145.5), module, Tempo::RATE1_CV));
+		addInput(createInput<aPJackTurchese>(Vec(63.5, 145.5), module, Tempo::RATE2_CV));
+		addInput(createInput<aPJackRosa>(Vec(106.7, 145.5), module, Tempo::RATE3_CV));
 		//SKIP
-		addParam(ParamWidget::create<aPKnob>(Vec(15, 196.3), module, Tempo::SKIP1_PARAM, 0.0f, 1.0f, 0.0f));
-		addParam(ParamWidget::create<aPKnob>(Vec(57.8, 196.3), module, Tempo::SKIP2_PARAM, 0.0f, 1.0f, 0.0f));
-		addParam(ParamWidget::create<aPKnob>(Vec(101, 196.3), module, Tempo::SKIP3_PARAM, 0.0f, 1.0f, 0.0f));
+		addParam(createParam<aPKnob>(Vec(15, 196.3), module, Tempo::SKIP1_PARAM));
+		addParam(createParam<aPKnob>(Vec(57.8, 196.3), module, Tempo::SKIP2_PARAM));
+		addParam(createParam<aPKnob>(Vec(101, 196.3), module, Tempo::SKIP3_PARAM));
 
-		addInput(Port::create<aPJackArancione>(Vec(20.7, 234.9), Port::INPUT, module, Tempo::SKIP1_CV));
-		addInput(Port::create<aPJackAzzurro>(Vec(63.5, 234.9), Port::INPUT, module, Tempo::SKIP2_CV));
-		addInput(Port::create<aPJackFux>(Vec(106.7,234.9), Port::INPUT, module, Tempo::SKIP3_CV));
+		addInput(createInput<aPJackArancione>(Vec(20.7, 234.9), module, Tempo::SKIP1_CV));
+		addInput(createInput<aPJackAzzurro>(Vec(63.5, 234.9), module, Tempo::SKIP2_CV));
+		addInput(createInput<aPJackFux>(Vec(106.7,234.9), module, Tempo::SKIP3_CV));
 
 		//MUTE
-		addParam(ParamWidget::create<aPLedButton>(Vec(21.9, 278.7), module, Tempo::MUTE1_BTN, 0.0, 1.0, 0.0));
-		addParam(ParamWidget::create<aPLedButton>(Vec(64.7, 278.7), module, Tempo::MUTE2_BTN, 0.0, 1.0, 0.0));
-		addParam(ParamWidget::create<aPLedButton>(Vec(107.8, 278.7), module, Tempo::MUTE3_BTN, 0.0, 1.0, 0.0));
+		addParam(createParam<aPLedButton>(Vec(21.9, 278.7), module, Tempo::MUTE1_BTN));
+		addParam(createParam<aPLedButton>(Vec(64.7, 278.7), module, Tempo::MUTE2_BTN));
+		addParam(createParam<aPLedButton>(Vec(107.8, 278.7), module, Tempo::MUTE3_BTN));
 
-		addChild(ModuleLightWidget::create<LedLight<RedLight>>(Vec(24.6, 280.9), module, Tempo::MUTE1_LED));
-		addChild(ModuleLightWidget::create<LedLight<RedLight>>(Vec(67.4, 280.9), module, Tempo::MUTE2_LED));
-		addChild(ModuleLightWidget::create<LedLight<RedLight>>(Vec(110.5, 280.9), module, Tempo::MUTE3_LED));
+		addChild(createLight<LedLight<RedLight>>(Vec(24.6, 280.9), module, Tempo::MUTE1_LED));
+		addChild(createLight<LedLight<RedLight>>(Vec(67.4, 280.9), module, Tempo::MUTE2_LED));
+		addChild(createLight<LedLight<RedLight>>(Vec(110.5, 280.9), module, Tempo::MUTE3_LED));
 		
 		//OUT
-		//addChild(ModuleLightWidget::create<SmallLight<RedLight>>(Vec(21.2, 304.4), module, Tempo::MULT_LED));
-		addOutput(Port::create<aPJackRosso>(Vec(20.7, 320.5), Port::OUTPUT, module, Tempo::OUTPUT_1));
-		addOutput(Port::create<aPJackBlu>(Vec(63.5, 320.5), Port::OUTPUT, module, Tempo::OUTPUT_2));
-		addOutput(Port::create<aPJackViola>(Vec(106.7, 320.5), Port::OUTPUT, module, Tempo::OUTPUT_3));
+		//addChild(createLight<SmallLight<RedLight>>(Vec(21.2, 304.4), module, Tempo::MULT_LED));
+		addOutput(createOutput<aPJackRosso>(Vec(20.7, 320.5), module, Tempo::OUTPUT_1));
+		addOutput(createOutput<aPJackBlu>(Vec(63.5, 320.5), module, Tempo::OUTPUT_2));
+		addOutput(createOutput<aPJackViola>(Vec(106.7, 320.5), module, Tempo::OUTPUT_3));
 	}
 };
 
-Model *modelTempo = Model::create<Tempo, TempoWidget>("aP-Modules", "Tempo", "Tempo - 4x Clock Multiplier - Divider", SEQUENCER_TAG);
+Model *modelTempo = createModel<Tempo, TempoWidget>("Tempo");

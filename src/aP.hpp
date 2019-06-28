@@ -4,13 +4,12 @@
 using namespace rack;
 
 // Forward-declare the Plugin, defined in Template.cpp
-extern Plugin *plugin;
+extern Plugin *pluginInstance;
 
 // Forward-declare each Model, defined in each module source file
 extern Model *modelMSMTRX;
 extern Model *modelBuffer;
 extern Model *modelTempo;
-extern Model *modelhpMeter;
 extern Model *modelDetuner;
 extern Model *modelGrooveRecorder;
 extern Model *modelVoltageRecorder;
@@ -29,7 +28,7 @@ struct aPBigKnob : SVGKnob {
 	aPBigKnob() {
 		minAngle = -0.75*M_PI;
 		maxAngle = 0.75*M_PI;
-		setSVG(SVG::load(assetPlugin(plugin, "res/Comp/aPbigknob.svg")));
+		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Comp/aPbigknob.svg")));
 	}
 };
 
@@ -37,21 +36,23 @@ struct aPKnob : SVGKnob {
 	aPKnob() {
 		minAngle = -0.75*M_PI;
 		maxAngle = 0.75*M_PI;
-		setSVG(SVG::load(assetPlugin(plugin, "res/Comp/aPlittleknob.svg")));
+		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Comp/aPlittleknob.svg")));
 	}
 };
 
 /////BUTTONS
 
-struct aPLedButton : SVGSwitch, MomentarySwitch {
+struct aPLedButton : app::SvgSwitch {
 	aPLedButton() {
-		addFrame(SVG::load(assetPlugin(plugin, "res/Comp/aPledbutton.svg")));
+		momentary = true;
+		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Comp/aPledbutton.svg")));
 	}
 };
 
-struct aPLittleButton : SVGSwitch, MomentarySwitch {
+struct aPLittleButton : SVGSwitch {
 	aPLittleButton() {
-		addFrame(SVG::load(assetPlugin(plugin,"res/Comp/aPlittlebutton.svg")));
+		momentary = true;
+		addFrame(APP->window->loadSvg(asset::plugin(pluginInstance,"res/Comp/aPlittlebutton.svg")));
 	}
 };
 
@@ -60,73 +61,73 @@ struct aPLittleButton : SVGSwitch, MomentarySwitch {
 
 struct aPJackArancione : SVGPort {
 	aPJackArancione() {
-		setSVG(SVG::load(assetPlugin(plugin, "res/Comp/jack/aPjackarancione.svg")));
+		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Comp/jack/aPjackarancione.svg")));
 	}
 };
 
 struct aPJackAzzurro : SVGPort {
 	aPJackAzzurro() {
-		setSVG(SVG::load(assetPlugin(plugin, "res/Comp/jack/aPjackazzurro.svg")));
+		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Comp/jack/aPjackazzurro.svg")));
 	}
 };
 
 struct aPJackBianco : SVGPort {
 	aPJackBianco() {
-		setSVG(SVG::load(assetPlugin(plugin, "res/Comp/jack/aPjackbianco.svg")));
+		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Comp/jack/aPjackbianco.svg")));
 	}
 };
 
 struct aPJackBlu : SVGPort {
 	aPJackBlu() {
-		setSVG(SVG::load(assetPlugin(plugin, "res/Comp/jack/aPjackblu.svg")));
+		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Comp/jack/aPjackblu.svg")));
 	}
 };
 
 struct aPJackFux : SVGPort {
 	aPJackFux() {
-		setSVG(SVG::load(assetPlugin(plugin, "res/Comp/jack/aPjackfux.svg")));
+		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Comp/jack/aPjackfux.svg")));
 	}
 };
 
 struct aPJackGiallo : SVGPort {
 	aPJackGiallo() {
-		setSVG(SVG::load(assetPlugin(plugin, "res/Comp/jack/aPjackgiallo.svg")));
+		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Comp/jack/aPjackgiallo.svg")));
 	}
 };
 
 struct aPJackNero : SVGPort {
 	aPJackNero() {
-		setSVG(SVG::load(assetPlugin(plugin, "res/Comp/jack/aPjacknero.svg")));
+		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Comp/jack/aPjacknero.svg")));
 	}
 };
 
 struct aPJackRosa : SVGPort {
 	aPJackRosa() {
-		setSVG(SVG::load(assetPlugin(plugin, "res/Comp/jack/aPjackrosa.svg")));
+		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Comp/jack/aPjackrosa.svg")));
 	}
 };
 
 struct aPJackRosso : SVGPort {
 	aPJackRosso() {
-		setSVG(SVG::load(assetPlugin(plugin, "res/Comp/jack/aPjackrosso.svg")));
+		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Comp/jack/aPjackrosso.svg")));
 	}
 };
 
 struct aPJackTurchese : SVGPort {
 	aPJackTurchese() {
-		setSVG(SVG::load(assetPlugin(plugin, "res/Comp/jack/aPjackturchese.svg")));
+		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Comp/jack/aPjackturchese.svg")));
 	}
 };
 
 struct aPJackVerde : SVGPort {
 	aPJackVerde() {
-		setSVG(SVG::load(assetPlugin(plugin, "res/Comp/jack/aPjackverde.svg")));
+		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Comp/jack/aPjackverde.svg")));
 	}
 };
 
 struct aPJackViola : SVGPort {
 	aPJackViola() {
-		setSVG(SVG::load(assetPlugin(plugin, "res/Comp/jack/aPjackviola.svg")));
+		setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Comp/jack/aPjackviola.svg")));
 	}
 };
 

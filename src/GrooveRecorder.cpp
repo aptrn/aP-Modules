@@ -33,24 +33,25 @@ struct GrooveRecorder : Module
 		NUM_LIGHTS
 	};
     
-    SchmittTrigger clock_input;
-    SchmittTrigger manual_trig;
-    SchmittTrigger gate_input;
-    SchmittTrigger rec_trig;
-    SchmittTrigger rec_cv_trig;
-    PulseGenerator main_pulse;
-    PulseGenerator led_pulse;
+    dsp::SchmittTrigger clock_input;
+    dsp::SchmittTrigger manual_trig;
+    dsp::SchmittTrigger gate_input;
+    dsp::SchmittTrigger rec_trig;
+    dsp::SchmittTrigger rec_cv_trig;
+    dsp::PulseGenerator main_pulse;
+    dsp::PulseGenerator led_pulse;
 
     int currentStep = 1;
     bool buffer[32];
     bool recording = false;
     bool manual;
-	void step() override;
+	void process(const ProcessArgs &args) override;
 
-	GrooveRecorder() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
+	GrooveRecorder() {
+		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);}
 
 
-    void reset() override {
+    void reset() {
 		recording = false;
         for (int i = 0; i < 32; i++){
 		buffer[i] = false;
@@ -58,13 +59,13 @@ struct GrooveRecorder : Module
 	}
 };
 
-void GrooveRecorder::step()
+void GrooveRecorder::process(const ProcessArgs &args)
 {   
-    int steps = params[STEPS_PARAM].value + params[STEPS_CV].value/10;
+    int steps = params[STEPS_PARAM].getValue() + params[STEPS_CV].getValue()/10;
     steps = clamp(steps, 1, 32);
 
-    if (!inputs[REC_CV].active){
-        if (rec_trig.process(params[REC_BUTTON].value)){
+    if (!inputs[REC_CV].isConnected()){
+        if (rec_trig.process(params[REC_BUTTON].getValue())){
             recording = !recording;
             if (recording == true){
                 currentStep = 1;
@@ -72,21 +73,21 @@ void GrooveRecorder::step()
         }
     }
     else {
-        recording = inputs[REC_CV].value > 0.2;
+        recording = inputs[REC_CV].getVoltage() > 0.2;
     }
 
-	if(inputs[CLOCK_INPUT].active){
-        if (clock_input.process(rescale(inputs[CLOCK_INPUT].value, 0.2f, 1.7f, 0.0f, 1.0f))){
+	if(inputs[CLOCK_INPUT].isConnected()){
+        if (clock_input.process(rescale(inputs[CLOCK_INPUT].getVoltage(), 0.2f, 1.7f, 0.0f, 1.0f))){
             currentStep++;
             if (currentStep >= steps){
                 currentStep = 1;
             }
-            if (inputs[GATE_INPUT].active){
+            if (inputs[GATE_INPUT].isConnected()){
                 if (recording == true){
-                    if (gate_input.process(rescale(inputs[GATE_INPUT].value, 0.2f, 1.7f, 0.0f, 1.0f))){
+                    if (gate_input.process(rescale(inputs[GATE_INPUT].getVoltage(), 0.2f, 1.7f, 0.0f, 1.0f))){
                        buffer[currentStep] = true;
                     }
-                    else if (inputs[GATE_INPUT].value > 0){
+                    else if (inputs[GATE_INPUT].getVoltage() > 0){
                        buffer[currentStep] = true;
                     }
                     else {
@@ -95,7 +96,7 @@ void GrooveRecorder::step()
                 }
             }
             if (recording == true){
-                if (params[MANUAL_BUTTON].value > 0){
+                if (params[MANUAL_BUTTON].getValue() > 0){
                     buffer[currentStep] = true;
                 }
             }
@@ -107,39 +108,39 @@ void GrooveRecorder::step()
     }
 
     lights[REC_LED].value = recording ? 1.0f : 0.0f;
-    outputs[REC_OUTPUT].value = recording ? 10.0f : 0.0f;
+    outputs[REC_OUTPUT].setVoltage(recording ? 10.0f : 0.0f);
 
 
 
-    float out = main_pulse.process(1.0 / engineGetSampleRate()); 
-    outputs[MAIN_OUTPUT].value = (out ? 10.0f : 0.0f);
-    lights[MANUAL_LED].value = led_pulse.process(1.0 / engineGetSampleRate())  ? 1.0f : 0.0f;
+    float out = main_pulse.process(1.0 / args.sampleRate); 
+    outputs[MAIN_OUTPUT].setVoltage((out ? 10.0f : 0.0f));
+    lights[MANUAL_LED].value = led_pulse.process(1.0 / args.sampleRate)  ? 1.0f : 0.0f;
 }
 
 struct GrooveRecorderWidget : ModuleWidget
 {
 	GrooveRecorderWidget(GrooveRecorder *module) : ModuleWidget(module)
 	{
-		setPanel(SVG::load(assetPlugin(plugin, "res/GrooveRecorder.svg")));
+		setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/GrooveRecorder.svg")));
 
-		addChild(Widget::create<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
-		addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
-		addChild(Widget::create<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
-		addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
+		addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
+		addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
+		addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
+		addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
-        addParam(ParamWidget::create<aPLedButton>(Vec(55.7, 183), module, GrooveRecorder::MANUAL_BUTTON, 0.0, 1.0, 0.0));
-        addChild(ModuleLightWidget::create<LedLight<RedLight>>(Vec(57.4, 185.2), module, GrooveRecorder::MANUAL_LED));
+        addParam(createParam<aPLedButton>(Vec(55.7, 183), module, GrooveRecorder::MANUAL_BUTTON));
+        addChild(createLight<LedLight<RedLight>>(Vec(57.4, 185.2), module, GrooveRecorder::MANUAL_LED));
 
-		addInput(Port::create<aPJackRosso>(Vec(33, 52.6), Port::INPUT, module, GrooveRecorder::CLOCK_INPUT));
-        addParam(ParamWidget::create<aPLedButton>(Vec(34.4, 100), module, GrooveRecorder::REC_BUTTON, 0.0, 1.0, 0.0));  
-		addChild(ModuleLightWidget::create<LedLight<RedLight>>(Vec(37.1, 102.2), module, GrooveRecorder::REC_LED));
-		addInput(Port::create<aPJackGiallo>(Vec(12.5, 131), Port::INPUT, module, GrooveRecorder::REC_CV));
- 		addOutput(Port::create<aPJackArancione>(Vec(54.5, 131.5), Port::OUTPUT, module, GrooveRecorder::REC_OUTPUT));
- 		addInput(Port::create<aPJackVerde>(Vec(12.8, 182), Port::INPUT, module, GrooveRecorder::GATE_INPUT));
-		addParam(ParamWidget::create<aPKnob>(Vec(9.3, 229.5), module, GrooveRecorder::STEPS_PARAM, 0.0, 32.0, 32.0));
- 		addInput(Port::create<aPJackViola>(Vec(54.5, 237.7), Port::INPUT, module, GrooveRecorder::STEPS_CV));       
-        addOutput(Port::create<aPJackBlu>(Vec(33.5, 297.5), Port::OUTPUT, module, GrooveRecorder::MAIN_OUTPUT));
+		addInput(createInput<aPJackRosso>(Vec(33, 52.6), module, GrooveRecorder::CLOCK_INPUT));
+        addParam(createParam<aPLedButton>(Vec(34.4, 100), module, GrooveRecorder::REC_BUTTON));  
+		addChild(createLight<LedLight<RedLight>>(Vec(37.1, 102.2), module, GrooveRecorder::REC_LED));
+		addInput(createInput<aPJackGiallo>(Vec(12.5, 131), module, GrooveRecorder::REC_CV));
+ 		addOutput(createOutput<aPJackArancione>(Vec(54.5, 131.5), module, GrooveRecorder::REC_OUTPUT));
+ 		addInput(createInput<aPJackVerde>(Vec(12.8, 182), module, GrooveRecorder::GATE_INPUT));
+		addParam(createParam<aPKnob>(Vec(9.3, 229.5), module, GrooveRecorder::STEPS_PARAM));
+ 		addInput(createInput<aPJackViola>(Vec(54.5, 237.7), module, GrooveRecorder::STEPS_CV));       
+        addOutput(createOutput<aPJackBlu>(Vec(33.5, 297.5), module, GrooveRecorder::MAIN_OUTPUT));
 	}
 };
 
-Model *modelGrooveRecorder = Model::create<GrooveRecorder, GrooveRecorderWidget>("aP-Modules", "Groove Recorder", "Groove Recorder - Clocked Gates Recorder", SAMPLER_TAG, UTILITY_TAG);
+Model *modelGrooveRecorder = createModel<GrooveRecorder, GrooveRecorderWidget>("Groove-Recorder");

@@ -1,0 +1,66 @@
+{
+  "slug": "ap-modules",
+  "name": "aP-Modules",
+  "version": "1.0.0",
+  "license": "BSD 3-Clause",
+  "author": "Alessandro Petrone",
+  "authorEmail": "alessandro.nge@gmail.",
+  "authorUrl": "",
+  "pluginUrl": "",
+  "manualUrl": "https://github.com/aptrn/aP-Modules/tree/master/Single-Page%20Manual",
+  "sourceUrl": "https://github.com/aptrn/aP-Modules",
+  "donateUrl": "paypal.me/aptrn",
+  "modules": [
+    {
+      "slug": "Buffer-Sampler",
+      "name": "Buffer Sampler",
+      "description": "Real-Time Sampler",
+      "tags": [
+        "Sampler"
+      ]
+    },
+    {
+      "slug": "Detuner",
+      "name": "Detuner",
+      "description": "Detune 1V/Oct",
+      "tags": [
+        "Utility",
+        "Polyphonic"
+      ]
+    },
+    {
+      "slug": "Groove-Recorder",
+      "name": "Groove Recorder",
+      "description": "Record gates into clocked buffer",
+      "tags": [
+        "Sequencer",
+        "Polyphonic"
+      ]
+    },
+    {
+      "slug": "Voltage-Recorder",
+      "name": "Voltage Recorder",
+      "description": "Record CVs into clocked buffer",
+      "tags": [
+        "Sequencer",
+        "Polyphonic"
+      ]
+    },
+    {
+      "slug": "Tempo",
+      "name": "Tempo",
+      "description": "3x Clock Multiplier/Divider",
+      "tags": [
+        "Sequencer"
+      ]
+    },
+    {
+      "slug": "MS-Matrix",
+      "name": "MS Matrix",
+      "description": "Mid/Side Encoder/Decoder",
+      "tags": [
+        "Utility"
+      ]
+    }
+  ]
+}

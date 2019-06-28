@@ -29,16 +29,17 @@ struct MSMTRX : Module
 		NUM_LIGHTS
 	};
 
-	MSMTRX() : Module(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS) {}
-	void step() override;
+	MSMTRX() {
+		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);}
+	void process(const ProcessArgs &args) override;
 };
 
-void MSMTRX::step()
+void MSMTRX::process(const ProcessArgs &args)
 {
 
 	//ENCODER
-	float left_in  = inputs[LEFT_INPUT].value;
-	float right_in = inputs[RIGHT_INPUT].value;
+	float left_in  = inputs[LEFT_INPUT].getVoltage();
+	float right_in = inputs[RIGHT_INPUT].getVoltage();
 	float mid_out  = (left_in + right_in)/sqrt(2);
 	float side_out = (left_in - right_in)/sqrt(2);
 	outputs[MID_OUTPUT].value   = mid_out;
@@ -47,39 +48,39 @@ void MSMTRX::step()
 
 
 	//DECODER
-	float mid_in   = inputs[MID_INPUT].value;
-	float side_in  = inputs[SIDE_INPUT].value;
+	float mid_in   = inputs[MID_INPUT].getVoltage();
+	float side_in  = inputs[SIDE_INPUT].getVoltage();
 	float left_out  = (mid_in + side_in)/sqrt(2);
 	float right_out = (mid_in - side_in)/sqrt(2);
 	outputs[LEFT_OUTPUT].value  = left_out;
-	outputs[RIGHT_OUTPUT].value = right_out;
+	outputs[RIGHT_OUTPUT].setVoltage(right_out);
 }
 
 struct MSMTRXWidget : ModuleWidget
 {
 	MSMTRXWidget(MSMTRX *module) : ModuleWidget(module)
 	{
-		setPanel(SVG::load(assetPlugin(plugin, "res/MSMTRX.svg")));
+		setPanel(APP->window->loadSvg(asset::plugin(pluginInstance, "res/MSMTRX.svg")));
 
-		addChild(Widget::create<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
-		addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
-		addChild(Widget::create<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
-		addChild(Widget::create<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
+		addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, 0)));
+		addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, 0)));
+		addChild(createWidget<ScrewSilver>(Vec(RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
+		addChild(createWidget<ScrewSilver>(Vec(box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
 
 	
 		//ENCODER
-		addInput(Port::create<aPJackGiallo>(Vec(16.7, 113.2), Port::INPUT, module, MSMTRX::LEFT_INPUT));
-		addInput(Port::create<aPJackArancione>(Vec(79.7, 113.2), Port::INPUT, module, MSMTRX::RIGHT_INPUT));
-	    addOutput(Port::create<aPJackTurchese>(Vec(16.7, 167.2), Port::OUTPUT, module, MSMTRX::MID_OUTPUT));
-		addOutput(Port::create<aPJackBlu>(Vec(79.7, 167.2), Port::OUTPUT, module, MSMTRX::SIDE_OUTPUT));
+		addInput(createInput<aPJackGiallo>(Vec(16.7, 113.2), module, MSMTRX::LEFT_INPUT));
+		addInput(createInput<aPJackArancione>(Vec(79.7, 113.2), module, MSMTRX::RIGHT_INPUT));
+	    addOutput(createOutput<aPJackTurchese>(Vec(16.7, 167.2), module, MSMTRX::MID_OUTPUT));
+		addOutput(createOutput<aPJackBlu>(Vec(79.7, 167.2), module, MSMTRX::SIDE_OUTPUT));
 
 
 		//DECODER
-		addInput(Port::create<aPJackTurchese>(Vec(16.7, 247.9), Port::INPUT, module, MSMTRX::MID_INPUT));
-		addInput(Port::create<aPJackBlu>(Vec(79.7, 247.9), Port::INPUT, module, MSMTRX::SIDE_INPUT));
-		addOutput(Port::create<aPJackVerde>(Vec(16.7, 305), Port::OUTPUT, module, MSMTRX::LEFT_OUTPUT));
-		addOutput(Port::create<aPJackRosso>(Vec(79.7, 305), Port::OUTPUT, module, MSMTRX::RIGHT_OUTPUT));
+		addInput(createInput<aPJackTurchese>(Vec(16.7, 247.9), module, MSMTRX::MID_INPUT));
+		addInput(createInput<aPJackBlu>(Vec(79.7, 247.9), module, MSMTRX::SIDE_INPUT));
+		addOutput(createOutput<aPJackVerde>(Vec(16.7, 305), module, MSMTRX::LEFT_OUTPUT));
+		addOutput(createOutput<aPJackRosso>(Vec(79.7, 305), module, MSMTRX::RIGHT_OUTPUT));
 	}
 };
 
-Model *modelMSMTRX = Model::create<MSMTRX, MSMTRXWidget>("aP-Modules", "MS Matrix", "Mid/Side Matrix - LR to MS and MS to LR encoder/decoder", UTILITY_TAG);
+Model *modelMSMTRX = createModel<MSMTRX, MSMTRXWidget>("MS-Matrix");
