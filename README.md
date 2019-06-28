@@ -25,8 +25,3 @@
     
 ####    Tempo (beta)
    3x Rhythm Derivator based on Clock Multipier and Divider
-    
-####    HP Meter (beta)
-   Colourful Resizable Blank
-
-
